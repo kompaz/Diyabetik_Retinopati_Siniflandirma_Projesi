@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeni Hasta Ekle</title>
+    <style>
+        body {
+            background-image: url('/static/arka_plan2.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        h2 {
+            color: #003366;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input[type="text"], input[type="date"], select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #0055cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            align-self: center;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function submitHastaForm(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: form.method,
+                body: formData,
+                headers: {
+                    'Accept': 'application/json',
+                }
+            })
+            .then(response => response.json().then(data => ({status: response.status, body: data})))
+            .then(response => {
+                if (response.status === 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Başarılı',
+                        text: response.body.success,
+                    });
+                    form.reset();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata',
+                        text: response.body.error,
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Yeni Hasta Ekle</h2>
+        <form method="post" action="/hasta_ekle" onsubmit="submitHastaForm(event)">
+            <input type="hidden" name="ekle" value="1">
+            
+            <label for="tc">Hasta TC No:</label>
+            <input type="text" id="tc" name="tc" placeholder="Hasta TC No" maxlength="11" required>
+            
+            <label for="ad">Hasta Adı:</label>
+            <input type="text" id="ad" name="ad" placeholder="Hasta Adı" required>
+            
+            <label for="soyad">Hasta Soyadı:</label>
+            <input type="text" id="soyad" name="soyad" placeholder="Hasta Soyadı" required>
+            
+            <label for="dogum_tarihi">Doğum Tarihi:</label>
+            <input type="date" id="dogum_tarihi" name="dogum_tarihi">
+            
+            <label for="cinsiyet">Cinsiyet:</label>
+            <select id="cinsiyet" name="cinsiyet">
+                <option value="">Seçiniz</option>
+                <option value="Erkek">Erkek</option>
+                <option value="Kadın">Kadın</option>
+                <option value="Diğer">Diğer</option>
+            </select>
+            
+            <label for="iletisim_bilgisi">İletişim Bilgisi:</label>
+            <input type="text" id="iletisim_bilgisi" name="iletisim_bilgisi" placeholder="İletişim Bilgisi" maxlength="11">
+            
+            <button type="submit">Kaydet</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doktor İşlemleri</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('/static/arka_plan2.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            display: flex; /* Flexbox to center the container */
+            flex-direction: column; /* Stack items vertically */
+            align-items: center; /* Center horizontally */
+            justify-content: center; /* Center vertically */
+            min-height: 100vh; /* Full height */
+            margin: 0; /* Remove default margin */
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 500px; /* Adjust width as needed */
+            margin-top: 20px; /* Space above the container */
+        }
+        h2 {
+            color: #003366;
+            font-weight: bold;
+            text-align: center; /* Center the title */
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="tel"], input[type="password"] {
+            width: 100%; /* Full width */
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box; /* Makes sure padding doesn't affect width */
+        }
+        button {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px; /* Space above the buttons */
+        }
+        button:hover {
+            background-color: #004494;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <h2>Doktor İşlemleri Sayfası</h2>
+    <div class="container">
+        <form id="doctorForm" method="post">
+            <div class="form-group">
+                <label for="doktorTc">TC Kimlik No:</label>
+                <input type="text" id="doktorTc" name="tc" value="{{ doktor.tc }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="doktorAdi">Doktor Adı:</label>
+                <input type="text" id="doktorAdi" name="ad" value="{{ doktor.ad }}">
+            </div>
+            <div class="form-group">
+                <label for="doktorSoyad">Doktor Soyadı:</label>
+                <input type="text" id="doktorSoyad" name="soyad" value="{{ doktor.soyad }}">
+            </div>
+            <div class="form-group">
+                <label for="doktorSifre">Şifre:</label>
+                <input type="password" id="doktorSifre" name="sifre" value="{{ doktor.sifre }}">
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Şifreyi Yeniden Giriniz:</label>
+                <input type="password" id="confirmPassword" value="{{ doktor.sifre }}">
+            </div>
+            <div class="form-group">
+                <label for="uzmanlik_alan">Uzmanlık Alanı:</label>
+                <input type="text" id="uzmanlik_alan" name="uzmanlik_alan" value="{{ doktor.uzmanlik_alan }}">
+            </div>
+            <div class="form-group">
+                <label for="iletisim_bilgisi">İletişim Bilgisi:</label>
+                <input type="tel" id="iletisim_bilgisi" name="iletisim_bilgisi" value="{{ doktor.iletisim_bilgisi }}">
+            </div>
+            <button type="submit">Doktor Bilgilerini Güncelle</button>
+        </form>
+        <form method="post" action="{{ url_for('doktor_ekle') }}">
+            <input type="hidden" name="ekle" value="1">
+            <button type="submit">Yeni Doktor Ekle</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('doctorForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var sifre = document.getElementById('doktorSifre').value;
+            var confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (sifre !== confirmPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hata',
+                    text: 'Şifreler eşleşmiyor!'
+                });
+                return;
+            }
+
+            var formData = new FormData(this);
+
+            fetch('{{ url_for("doktor_islemleri") }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                // Başarılı olursa modal göster
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Başarılı',
+                    text: 'Doktor bilgileri başarıyla güncellendi',
+                    confirmButtonText: 'Tamam'
+                }).then(() => {
+                    window.location.reload();  // Sayfayı yenileyerek güncellenmiş bilgileri göster
+                });
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hata',
+                    text: 'Bilgiler güncellenirken bir hata oluştu.'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

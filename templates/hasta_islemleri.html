@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasta İşlemleri</title>
+    <style>
+        body {
+            background-image: url('/static/arka_plan2.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2, h3 {
+            color: #003366;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .search-container input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .button-container button, .button-container a {
+            padding: 8px 16px;
+            background-color: #0055cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+            width: 48%;
+            font-size: 14px;
+        }
+
+        .button-container button:hover, .button-container a:hover {
+            background-color: #003399;
+        }
+
+        .button-container .spacer {
+            width: 4%;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input[type="text"], input[type="file"], input[type="date"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #0055cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+        .success-message {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function previewImage() {
+            var file = document.getElementById('retina_image').files[0];
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                var imgElement = document.getElementById('image_preview');
+                imgElement.src = e.target.result;
+                imgElement.style.display = 'block';
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        function getHasta() {
+            var tcno = document.getElementById('search_tcno').value;
+            
+            fetch('/hasta_ara', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'tcno': tcno
+                })
+            })
+            .then(response => response.json().then(data => ({status: response.status, body: data})))
+            .then(response => {
+                if (response.status === 200) {
+                    const data = response.body;
+                    document.getElementById('patient_tcno').value = data.tc;
+                    document.getElementById('fullname').value = data.ad + " " + data.soyad;
+                    document.getElementById('hastalik_derecesi').value = data.hastalik_derecesi || 'Daha önce bir analiz yapılmamış.';
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata',
+                        text: response.body.error,
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+            });
+        }
+    </script>
+</head>
+<body>
+
+    <h2>Hasta İşlemleri</h2>
+
+    <!-- Hasta arama container'ı -->
+    <div class="container">
+        <h3>Hasta Ara</h3>
+        <div class="search-container">
+            <input type="text" id="search_tcno" name="tcno" placeholder="Hasta TC No">
+            <div class="button-container">
+                <button onclick="getHasta()">Hasta Getir</button>
+                <div class="spacer"></div>
+                <a href="{{ url_for('hasta_ekle') }}">Yeni Hasta Ekle</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hasta bilgileri container'ı -->
+    <div class="container">
+        <h3>Hasta Bilgileri</h3>
+        <form method="post" enctype="multipart/form-data">
+            <label for="patient_tcno">Hasta TC No:</label>
+            <input type="text" id="patient_tcno" name="tcno" readonly>
+            
+            <label for="fullname">Hasta Adı Soyadı:</label>
+            <input type="text" id="fullname" name="fullname" readonly>
+            
+            <label for="hastalik_derecesi">Önceki Hastalık Derecesi:</label>
+            <textarea id="hastalik_derecesi" name="hastalik_derecesi" readonly>Henüz bir analiz yapılmamış.</textarea>
+            
+            <label for="retina_image">Retina Görüntüsü:</label>
+            <input type="file" id="retina_image" name="file" onchange="previewImage();" required>
+            
+            <!-- Görüntü önizlemesi için img etiketi -->
+            <img id="image_preview" src="#" alt="Seçilen Retina Görüntüsü" style="display: none; max-width: 500px; max-height: 300px;"/>
+            
+            <!-- Butonu görselin altından biraz aşağıda göstermek için margin-top ekleniyor -->
+            <button type="submit" style="margin-top: 20px;">Hastalık Derecesini Belirle</button>
+        </form>
+    </div>
+</body>
+</html>

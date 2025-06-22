@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeni Doktor Ekle</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('/static/arka_plan2.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            display: flex; /* Flexbox to center the container */
+            flex-direction: column; /* Stack items vertically */
+            align-items: center; /* Center horizontally */
+            justify-content: center; /* Center vertically */
+            min-height: 100vh; /* Full height */
+            margin: 0; /* Remove default margin */
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 500px; /* Adjust width as needed */
+            margin-top: 20px; /* Space above the container */
+        }
+        h2 {
+            color: #003366;
+            font-weight: bold;
+            text-align: center; /* Center the title */
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="tel"], input[type="password"] {
+            width: 100%; /* Full width */
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box; /* Makes sure padding doesn't affect width */
+        }
+        button {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px; /* Space above the buttons */
+        }
+        button:hover {
+            background-color: #004494;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+        .success-message {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Yeni Doktor Ekle</h2>
+    <div class="container">
+        <form method="post" action="/doktor_ekle">
+            <div class="form-group">
+                <label for="tc">TC Kimlik No:</label>
+                <input type="text" id="tc" name="tc" placeholder="TC Kimlik No giriniz" maxlength="11" required>
+            </div>
+            <div class="form-group">
+                <label for="ad">Doktor Adı:</label>
+                <input type="text" id="ad" name="ad" placeholder="Doktorun adını giriniz" required>
+            </div>
+            <div class="form-group">
+                <label for="soyad">Doktor Soyadı:</label>
+                <input type="text" id="soyad" name="soyad" placeholder="Doktorun soyadını giriniz" required>
+            </div>
+            <div class="form-group">
+                <label for="sifre">Şifre:</label>
+                <input type="password" id="sifre" name="sifre" placeholder="Şifre giriniz" required>
+            </div>
+            <div class="form-group">
+                <label for="uzmanlik_alan">Uzmanlık Alanı:</label>
+                <input type="text" id="uzmanlik_alan" name="uzmanlik_alan" placeholder="Uzmanlık alanını giriniz" required>
+            </div>
+            <div class="form-group">
+                <label for="iletisim_bilgisi">Telefon Numarası:</label>
+                <input type="tel" id="iletisim_bilgisi" name="iletisim_bilgisi" placeholder="Telefon numarasını giriniz" required>
+            </div>
+            <button type="submit">Kaydet</button>
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+        </form>
+    </div>
+</body>
+</html>

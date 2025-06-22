@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.log
+
+# Sanal Ortamlar
+venv/
+env/
+myenv/
+ENV/
+.venv/
+
+# IDE ve sistem dosyaları
+.vscode/
+*.DS_Store
+Thumbs.db
+
+# Flask session ve db cache
+instance/
+*.db
+*.sqlite3
+
+# Büyük dosyalar
+*.h5
+*.pkl
+*.dll
+*.pyd
+
+# Git ile yüklenmesini istemediğin diğer dosyalar
+uploads/

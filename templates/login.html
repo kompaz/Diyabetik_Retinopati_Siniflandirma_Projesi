@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doktor Girişi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('/static/arka_plan2.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        h2 {
+            color: #003366;
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #004494;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function submitLoginForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: form.method,
+                body: formData,
+                headers: {
+                    'Accept': 'application/json',
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                window.location.href = '/hasta_ve_doktor_islemleri';
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hata',
+                    text: error.message,
+                });
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Doktor Girişi</h2>
+        <form method="post" action="/" onsubmit="submitLoginForm(event)">
+            <div class="form-group">
+                <label for="tc">TC Kimlik No:</label>
+                <input type="text" id="tc" name="tc" placeholder="TC Kimlik No" maxlength="11" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Şifre:</label>
+                <input type="password" id="password" name="password" placeholder="Şifre" required>
+            </div>
+            <button type="submit">Giriş Yap</button>
+            <div id="error-message" class="error-message"></div>
+        </form>
+    </div>
+</body>
+</html>
